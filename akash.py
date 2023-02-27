@@ -1,43 +1,37 @@
-import tkinter as tk
 import qrcode
-from PIL import ImageTk, Image
+import tkinter as tk
+from tkinter import filedialog, messagebox
 
-# Create the tkinter window
-root = tk.Tk()
-root.title("QR Code Generator")
 
-# Create a label for the URL input
-url_label = tk.Label(root, text="Enter URL:")
-url_label.pack()
-
-# Create an entry box for the URL input
-url_entry = tk.Entry(root)
-url_entry.pack()
-
-# Create a function to generate the QR code and display it
-def generate_qr():
-    # Get the URL from the entry box
-    url = url_entry.get()
+def generate_qr_code():
+    # Get the file path from the user
+    filepath = filedialog.askopenfilename(title="Select a File")
+    
+    if not filepath:
+        messagebox.showerror("Error", "No file selected.")
+        return
+    
+    # Open the file and read its contents
+    with open(filepath, "rb") as f:
+        file_contents = f.read()
     
     # Generate the QR code
     qr = qrcode.QRCode(version=1, box_size=10, border=5)
-    qr.add_data(url)
+    qr.add_data(file_contents)
     qr.make(fit=True)
     img = qr.make_image(fill_color="black", back_color="white")
     
-    # Display the QR code in a tkinter window
-    img = img.resize((300, 300))
-    img = ImageTk.PhotoImage(img)
-    qr_label.config(image=img)
-    qr_label.image = img
-    
-# Create a button to generate the QR code
-generate_button = tk.Button(root, text="Generate QR Code", command=generate_qr)
-generate_button.pack()
+    # Display the QR code
+    img.show()
 
-# Create a label to display the QR code
-qr_label = tk.Label(root)
-qr_label.pack()
 
-# Start the tkinter mainloop
+# Create the main window
+root = tk.Tk()
+root.title("QR Code Generator")
+
+# Create a button to select a file
+file_button = tk.Button(root, text="Select a File", command=generate_qr_code)
+file_button.pack()
+
+# Run the main loop
 root.mainloop()
